@@ -11,9 +11,13 @@
 #import "BabyCentralManager.h"
 #import "BabyCallback.h"
 
-
+static dispatch_queue_t kBluetoothQueue;
 
 @implementation BabyCentralManager
+
++ (void)initialize {
+    kBluetoothQueue = dispatch_queue_create("baby_bluetooth_queue", DISPATCH_QUEUE_SERIAL);
+}
 
 #define currChannel [babySpeaker callbackOnCurrChannel]
 
@@ -37,11 +41,11 @@
         NSArray *backgroundModes = [[[NSBundle mainBundle] infoDictionary]objectForKey:@"UIBackgroundModes"];
         if ([backgroundModes containsObject:@"bluetooth-central"]) {
             //后台模式
-            centralManager = [[CBCentralManager alloc]initWithDelegate:self queue:nil options:options];
+            centralManager = [[CBCentralManager alloc]initWithDelegate:self queue:kBluetoothQueue options:options];
         }
         else {
             //非后台模式
-            centralManager = [[CBCentralManager alloc]initWithDelegate:self queue:nil];
+            centralManager = [[CBCentralManager alloc]initWithDelegate:self queue:kBluetoothQueue];
         }
         
         //pocket
